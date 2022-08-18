@@ -1,5 +1,6 @@
 'use strict';
 require('dotenv').config();
+const config = require('./config');
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
@@ -31,4 +32,4 @@ client.on('guildMemberRemove', (member) => {
   generalChannel.send(`<@${user.id}> **5raj**/**tza3ak** 🤡 mel *Denya*.`);
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(config.token);
