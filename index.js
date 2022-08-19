@@ -71,7 +71,8 @@ client.on('interactionCreate', async (interaction) => {
       .setFooter({
         text: `Requested by ${user.username}`,
         iconURL: interaction.member.displayAvatarURL(),
-      });
+      })
+      .setTimestamp();
     // await interaction.reply(
     //   `🎶 __**${song.name}**__ 🎶 by 💽 __**${song.uploader.name}**__ 💽 from *${song.source}*`
     // );
