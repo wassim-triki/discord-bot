@@ -56,6 +56,7 @@ client.on('interactionCreate', async (interaction) => {
         textChannel: interaction.channel,
       })
       .catch((err) => console.log(colors.red(err)));
+    await interaction.reply('la7dha bark 👌');
   }
 });
 
