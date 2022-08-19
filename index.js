@@ -1,36 +1,15 @@
 'use strict';
 require('dotenv').config();
-const config = require('./config');
-const player = require('./player');
-const { REST, Routes } = require('discord.js');
-const client = require('./client');
-const ytdl = require('ytdl-core');
-const {
-  joinVoiceChannel,
-  createAudioResource,
-  createAudioPlayer,
-  StreamType,
-} = require('@discordjs/voice');
-
+const config = require('./src/config');
+const client = require('./src/client');
+const distube = require('./src/distube');
+const commands = require('./src/commands/commands');
+const { REST, Routes, EmbedBuilder } = require('discord.js');
 const SERVER_ID = '1009727529122267176';
 const WELCOME_CHANNEL_ID = '1009745835908669501';
 const GENERAL_CHANNEL_ID = '1009763648870301796';
-
-client.player = player;
-
-const commands = [
-  {
-    name: 'play',
-    description: 'Play a song.',
-    options: [
-      {
-        name: 'name',
-        description: 'The name of the song',
-        type: 3, //String
-      },
-    ],
-  },
-];
+client.distube = distube;
+client.emotes = config.emotes;
 const rest = new REST({ version: '10' }).setToken(config.token);
 (async () => {
   try {
@@ -47,14 +26,57 @@ const rest = new REST({ version: '10' }).setToken(config.token);
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  if (interaction.commandName === 'stop') {
+    client.distube.pause();
+    await interaction.reply(`${client.emotes.stop} | Stopped the music!`);
+  }
   if (interaction.commandName === 'play') {
-    const { _hoistedOptions: options } = interaction.options;
-    const songName = options[0]?.value || null;
-    let reply = 'Playing a random song 🎶... ';
-    if (songName) {
-      reply = `Playing "${songName}" 🎶...`;
+    if (!interaction.member.voice.channel) {
+      await interaction.reply(
+        `${client.emotes.error} | You must be in a voice channel!`
+      );
+      return;
     }
-    await interaction.reply(reply);
+
+    const { user } = interaction.member;
+
+    const input = interaction.options._hoistedOptions[0].value || '';
+    const voiceChannel = interaction.member.voice.channel;
+
+    const result = await client.distube.search(input);
+    if (!result) {
+      await interaction.reply(`${client.emotes.error} | No song found!`);
+      return;
+    }
+    const song = result[0];
+    client.distube
+      .play(voiceChannel, song.url, {
+        textChannel: interaction.channel,
+        member: interaction.member,
+      })
+      .catch((err) =>
+        interaction.reply(`${client.emotes.error} | ${err.message}`)
+      );
+
+    const songEmbed = new EmbedBuilder()
+      .setColor(0x0099ff)
+      .setTitle(song.name)
+      .setAuthor({
+        name: `${song.uploader.name} - ${song.source}`,
+        url: song.uploader.url,
+      })
+      .setURL(song.url)
+      .addFields({ name: 'Duration', value: song.formattedDuration })
+      .setImage(song.thumbnail)
+      .setFooter({
+        text: `Requested by ${user.username}`,
+        iconURL: interaction.member.displayAvatarURL(),
+      });
+    // await interaction.reply(
+    //   `🎶 __**${song.name}**__ 🎶 by 💽 __**${song.uploader.name}**__ 💽 from *${song.source}*`
+    // );
+    console.log(song);
+    interaction.channel.send({ embeds: [songEmbed] });
   }
 });
 
@@ -78,34 +100,5 @@ client.on('guildMemberRemove', (member) => {
   const { user } = member;
   generalChannel.send(`<@${user.id}> **5raj**/**tza3ak** 🤡 mel *Denya*.`);
 });
-
-// client.on('messageCreate', async (message) => {
-//   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
-//   const command = args.shift();
-//   const guildQueue = client.player.getQueue(message.guild.id);
-
-//   if (command === 'play') {
-//     let queue = client.player.createQueue(message.guild.id);
-//     const channel = message.member.voice.channel;
-//     if (!channel)
-//       message.channel.send('a5tar voice channel bch tal3b mouzika.');
-//     const connection = joinVoiceChannel({
-//       channelId: channel.id,
-//       guildId: message.guild.id,
-//       adapterCreator: message.guild.voiceAdapterCreator,
-//       selfDeaf: false,
-//     });
-//     const stream = ytdl(
-//       'https://www.youtube.com/watch?v=KmVaSZS_SW4&ab_channel=PolyvinylRecords',
-//       { filter: 'audioonly' }
-//     );
-//     const resource = createAudioResource(stream, {
-//       inputType: StreamType.Arbitrary,
-//     });
-//     const audioPlayer = createAudioPlayer();
-//     audioPlayer.play(resource);
-//     connection.subscribe(audioPlayer);
-//   }
-// });
 
 client.login(config.token);
