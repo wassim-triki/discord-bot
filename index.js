@@ -3,29 +3,16 @@ require('dotenv').config();
 const config = require('./src/config');
 const client = require('./src/client');
 const distube = require('./src/distube');
-const commands = require('./src/commands/commands');
+require('./src/controlls/play');
+require('./src/controlls/pause');
 const colors = require('colors/safe');
-const { REST, Routes } = require('discord.js');
+require('./src/rest')();
 const createSongEmbed = require('./src/createSongEmbed');
-const SERVER_ID = '1009727529122267176';
 const WELCOME_CHANNEL_ID = '1009745835908669501';
 const GENERAL_CHANNEL_ID = '1009763648870301796';
 
 client.distube = distube;
 client.emotes = config.emotes;
-const rest = new REST({ version: '10' }).setToken(config.token);
-(async () => {
-  try {
-    console.log('Started refreshing application (/) commands.');
-    await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), {
-      body: commands,
-    });
-    console.log('Successfully reloaded application (/) commands.');
-  } catch (error) {
-    console.error(error);
-  }
-})();
-
 client.distube.on('addSong', (queue, song) => {
   const songEmbed = createSongEmbed(song, queue);
   queue.textChannel.send({ embeds: [songEmbed] });
@@ -46,20 +33,6 @@ client.distube.on('playSong', async (queue, song) => {
   }
 });
 
-client.on('messageReactionAdd', (reaction, user) => {
-  const action = reaction._emoji.name;
-  const queue = client.distube.getQueue(reaction.message.guildId);
-  if (action === client.emotes.play) {
-    if (reaction.count % 2 === 0) queue.pause(reaction.message.guildId);
-  }
-});
-client.on('messageReactionRemove', (reaction, user) => {
-  const action = reaction._emoji.name;
-  const queue = client.distube.getQueue(reaction.message.guildId);
-  if (action === client.emotes.play) {
-    if (reaction.count % 2 != 0) queue.resume();
-  }
-});
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
