@@ -6,8 +6,8 @@ module.exports = {
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
   },
   emotes: {
-    play: '▶️',
-    stop: '⏹️',
+    play: '⏯',
+    stop: '⏯',
     queue: '📝',
     success: '✅',
     repeat: '🔁',

@@ -5,7 +5,8 @@ const client = require('./src/client');
 const distube = require('./src/distube');
 const commands = require('./src/commands/commands');
 const colors = require('colors/safe');
-const { REST, Routes, EmbedBuilder } = require('discord.js');
+const { REST, Routes } = require('discord.js');
+const createSongEmbed = require('./src/createSongEmbed');
 const SERVER_ID = '1009727529122267176';
 const WELCOME_CHANNEL_ID = '1009745835908669501';
 const GENERAL_CHANNEL_ID = '1009763648870301796';
@@ -24,34 +25,41 @@ const rest = new REST({ version: '10' }).setToken(config.token);
     console.error(error);
   }
 })();
-const createSongEmbed = (song, queue) => {
-  const isPlaying = queue.songs[0] === song;
-  console.log('qSize:', queue.songs.length);
-  return new EmbedBuilder()
-    .setColor(0x0099ff)
-    .setTitle(song.name)
-    .setAuthor({
-      name: isPlaying ? '🎵 Playing 🎵' : '➕ Added to queue',
-    })
-    .setURL(song.url)
-    .addFields({ name: 'Duration', value: song.formattedDuration })
-    .setImage(song.thumbnail)
-    .setFooter({
-      text: `Requested by ${song.user.username}`,
-      iconURL: song.user.avatarURL(),
-    })
-    .setTimestamp();
-};
+
 client.distube.on('addSong', (queue, song) => {
   const songEmbed = createSongEmbed(song, queue);
   queue.textChannel.send({ embeds: [songEmbed] });
 });
 
-client.distube.on('playSong', (queue, song) => {
-  const songEmbed = createSongEmbed(song, queue);
-  queue.textChannel.send({ embeds: [songEmbed] });
+client.distube.on('playSong', async (queue, song) => {
+  try {
+    const songEmbed = createSongEmbed(song, queue);
+    const message = await queue.textChannel.send({ embeds: [songEmbed] });
+    // await message.react('⏭');
+    await message.react(client.emotes.play);
+    // await message.react('⏮');
+    // await message.react('🔇');
+    // await message.react('🔉');
+    // await message.react('🔊');
+  } catch (err) {
+    console.log(colors.red(err));
+  }
 });
 
+client.on('messageReactionAdd', (reaction, user) => {
+  const action = reaction._emoji.name;
+  const queue = client.distube.getQueue(reaction.message.guildId);
+  if (action === client.emotes.play) {
+    if (reaction.count % 2 === 0) queue.pause(reaction.message.guildId);
+  }
+});
+client.on('messageReactionRemove', (reaction, user) => {
+  const action = reaction._emoji.name;
+  const queue = client.distube.getQueue(reaction.message.guildId);
+  if (action === client.emotes.play) {
+    if (reaction.count % 2 != 0) queue.resume();
+  }
+});
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
