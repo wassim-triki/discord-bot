@@ -42,17 +42,31 @@ client.on('interactionCreate', async (interaction) => {
         content: `${client.emotes.warning} | lezm tkoun fi voice channel bech tasma3 music!`,
       });
     }
-    const input = interaction.options._hoistedOptions[0].value || '';
+    const input = interaction.options._hoistedOptions[0]?.value || '';
     const voiceChannel = interaction.member.voice.channel;
-    const result = await client.distube.search(input);
-    if (!result) {
-      return interaction.reply({
-        content: `${config.emotes.noResult} | ma l9itch "${input}". Cherchi 7aja 7a9i9ya`,
-      });
+    let song;
+    let result;
+    if (input) {
+      result = await client.distube.search(input);
+      if (!result) {
+        return interaction.reply({
+          content: `${config.emotes.noResult} | ma l9itch "${input}". Cherchi 7aja 7a9i9ya`,
+        });
+      }
+    } else {
+      interaction.channel.send(
+        `${config.emotes.neutral} | ma 7atitch esm 6neya. haw 7aja random...`
+      );
     }
-    const song = result[0];
+
+    if (result) {
+      song = result[0].url;
+    } else {
+      song = 'music';
+    }
+
     client.distube
-      .play(voiceChannel, song.url || '', {
+      .play(voiceChannel, song, {
         member: interaction.member,
         textChannel: interaction.channel,
       })
