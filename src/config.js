@@ -9,7 +9,11 @@ module.exports = {
     play: '⏯',
     stop: '⏯',
     success: '✅',
+    noResult: '💢',
+    warning: '⚠',
     repeat: '🔁',
     error: '❌',
   },
 };
+
+// :no_entry_sign: :warning: :exclamation: :anger:

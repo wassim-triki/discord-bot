@@ -38,25 +38,26 @@ client.on('interactionCreate', async (interaction) => {
 
   if (interaction.commandName === 'play') {
     if (!interaction.member.voice.channel) {
-      await interaction.reply(
-        `${client.emotes.error} | You must be in a voice channel!`
-      );
+      return interaction.reply({
+        content: `${client.emotes.warning} | lezm tkoun fi voice channel bech tasma3 music!`,
+      });
     }
     const input = interaction.options._hoistedOptions[0].value || '';
     const voiceChannel = interaction.member.voice.channel;
     const result = await client.distube.search(input);
     if (!result) {
-      console.log(colors.red('No result found.'));
+      return interaction.reply({
+        content: `${config.emotes.noResult} | ma l9itch "${input}". Cherchi 7aja 7a9i9ya`,
+      });
     }
     const song = result[0];
-    console.log('🎵' + song.name + '🎵');
     client.distube
       .play(voiceChannel, song.url || '', {
         member: interaction.member,
         textChannel: interaction.channel,
       })
       .catch((err) => console.log(colors.red(err)));
-    await interaction.reply('la7dha bark 👌');
+    return interaction.reply({ content: 'la7dha bark 🧐 ' });
   }
 });
 
