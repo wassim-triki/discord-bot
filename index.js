@@ -5,6 +5,7 @@ const client = require('./src/client');
 const distube = require('./src/distube');
 require('./src/controlls/play');
 require('./src/controlls/pause');
+require('./src/controlls/next');
 const colors = require('colors/safe');
 require('./src/rest')();
 const createSongEmbed = require('./src/createSongEmbed');
@@ -22,9 +23,9 @@ client.distube.on('playSong', async (queue, song) => {
   try {
     const songEmbed = createSongEmbed(song, queue);
     const message = await queue.textChannel.send({ embeds: [songEmbed] });
-    // await message.react('⏭');
-    await message.react(client.emotes.play);
     // await message.react('⏮');
+    await message.react(client.emotes.play);
+    await message.react(client.emotes.next);
     // await message.react('🔇');
     // await message.react('🔉');
     // await message.react('🔊');

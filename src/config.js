@@ -8,6 +8,7 @@ module.exports = {
   emotes: {
     play: '⏯',
     stop: '⏯',
+    next: '⏭',
     success: '🟢',
     noResult: '💢',
     neutral: '🔵',
