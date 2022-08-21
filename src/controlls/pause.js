@@ -17,5 +17,4 @@ client.on('messageReactionAdd', (reaction, user) => {
       }
     }
   }
-  console.log(queue.playing);
 });

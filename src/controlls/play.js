@@ -14,5 +14,4 @@ client.on('messageReactionRemove', (reaction, user) => {
       }
     }
   }
-  console.log(queue.playing);
 });

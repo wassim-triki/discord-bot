@@ -11,7 +11,6 @@ client.on('messageReactionAdd', (reaction, user) => {
         queue.previous(reaction.message);
       }
     }
-    console.log('Previous Songs:', queue.previousSongs.length);
   } catch (error) {
     return reaction.message.channel.send(
       `${client.emotes.error} | ${error.message}`
@@ -28,7 +27,6 @@ client.on('messageReactionRemove', (reaction, user) => {
         queue.previous(reaction.message);
       }
     }
-    console.log('Previous Songs:', queue.previousSongs.length);
   } catch (error) {
     return reaction.message.channel.send(
       `${client.emotes.error} | ${error.message}`

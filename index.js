@@ -7,6 +7,7 @@ require('./src/controlls/play');
 require('./src/controlls/pause');
 require('./src/controlls/next');
 require('./src/controlls/previous');
+require('./src/controlls/queue');
 const colors = require('colors/safe');
 require('./src/rest')();
 const createSongEmbed = require('./src/createSongEmbed');
@@ -27,6 +28,7 @@ client.distube.on('playSong', async (queue, song) => {
     await message.react(client.emotes.previous);
     await message.react(client.emotes.play);
     await message.react(client.emotes.next);
+    await message.react(client.emotes.queue);
     // await message.react('🔇');
     // await message.react('🔉');
     // await message.react('🔊');
@@ -38,6 +40,10 @@ client.distube.on('playSong', async (queue, song) => {
 client.on('interactionCreate', async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
+    // console.log(interaction.commandName);
+    // if (interaction.commandName === 'pause') {
+    //   client.distube.pause(interaction);
+    // }
 
     if (interaction.commandName === 'play') {
       if (!interaction.member.voice.channel) {

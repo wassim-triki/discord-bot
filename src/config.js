@@ -10,6 +10,7 @@ module.exports = {
     stop: '⏯',
     next: '⏭',
     previous: '⏮️',
+    queue: '📃',
     success: '🟢',
     noResult: '💢',
     neutral: '🔵',

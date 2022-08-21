@@ -1,3 +1,3 @@
 const playCommand = require('./play');
-const stopCommand = require('./stop');
-module.exports = [playCommand.toJSON(), stopCommand.toJSON()];
+const pauseCommand = require('./pause');
+module.exports = [playCommand.toJSON(), pauseCommand.toJSON()];
