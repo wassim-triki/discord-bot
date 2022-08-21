@@ -61,7 +61,8 @@ client.on('interactionCreate', async (interaction) => {
         })
         .catch((err) => console.log(colors.red(err)));
 
-      return interaction.reply({ content: 'la7dha bark 🧐 ' });
+      await interaction.reply({ content: 'la7dha bark 🧐 ' });
+      return;
     }
   } catch (error) {
     return interaction.reply({

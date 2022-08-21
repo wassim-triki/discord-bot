@@ -1,6 +1,6 @@
 const client = require('../client');
 
-client.on('messageReactionAdd', (reaction, user) => {
+client.on('messageReactionAdd', async (reaction, user) => {
   try {
     const action = reaction._emoji.name;
     const queue = client.distube.getQueue(reaction.message.guildId);
@@ -10,8 +10,9 @@ client.on('messageReactionAdd', (reaction, user) => {
       queue.skip(reaction.message.guildId);
     }
   } catch (error) {
-    return reaction.textChannel.send(
+    await reaction.textChannel.send(
       `${client.emotes.error} | ${error.message}`
     );
+    return;
   }
 });
