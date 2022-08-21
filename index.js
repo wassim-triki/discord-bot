@@ -40,10 +40,43 @@ client.distube.on('playSong', async (queue, song) => {
 client.on('interactionCreate', async (interaction) => {
   try {
     if (!interaction.isChatInputCommand()) return;
-    // console.log(interaction.commandName);
-    // if (interaction.commandName === 'pause') {
-    //   client.distube.pause(interaction);
-    // }
+    if (interaction.commandName === 'pause') {
+      client.distube.pause(interaction);
+      await interaction.reply({
+        content: `${client.emotes.neutral} | Music paused.`,
+      });
+    }
+    if (interaction.commandName === 'resume') {
+      client.distube.resume(interaction);
+      await interaction.reply({
+        content: `${client.emotes.neutral} | Music resuming.`,
+      });
+    }
+    if (interaction.commandName === 'skip') {
+      client.distube.skip(interaction);
+      await interaction.reply({
+        content: `${client.emotes.neutral} | Skipped track.`,
+      });
+    }
+    if (interaction.commandName === 'prev') {
+      client.distube.previous(interaction);
+      await interaction.reply({
+        content: `${client.emotes.neutral} | Previous track.`,
+      });
+    }
+    if (interaction.commandName === 'queue') {
+      const queue = client.distube.getQueue(interaction);
+      await interaction.reply({
+        content:
+          '📃 Queue:\n' +
+          queue.songs
+            .map(
+              (song, id) =>
+                `**${id + 1}**. ${song.name} - \`${song.formattedDuration}\``
+            )
+            .join('\n'),
+      });
+    }
 
     if (interaction.commandName === 'play') {
       if (!interaction.member.voice.channel) {
