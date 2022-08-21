@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('@discordjs/builders');
 
 module.exports = (song, queue) => {
   const isPlaying = queue.songs[0] === song;
-  console.log('qSize:', queue.songs.length);
+  // console.log('qSize:', queue.songs.length);
   return new EmbedBuilder()
     .setColor(0x0099ff)
     .setTitle(song.name)

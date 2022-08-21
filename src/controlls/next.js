@@ -5,7 +5,8 @@ client.on('messageReactionAdd', (reaction, user) => {
     const action = reaction._emoji.name;
     const queue = client.distube.getQueue(reaction.message.guildId);
     if (!queue || (!queue.autoplay && queue.songs.length <= 1)) return;
-    if (action === client.emotes.next) {
+    if (action === client.emotes.next && reaction.count > 1) {
+      console.log('skipping');
       queue.skip(reaction.message.guildId);
     }
   } catch (error) {

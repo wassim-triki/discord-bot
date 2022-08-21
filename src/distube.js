@@ -16,6 +16,7 @@ module.exports = new DisTube(client, {
   leaveOnStop: false,
   leaveOnEmpty: false,
   leaveOnFinish: false,
+  savePreviousSongs: true,
   emitNewSongOnly: true,
   emitAddSongWhenCreatingQueue: false,
   emitAddListWhenCreatingQueue: false,

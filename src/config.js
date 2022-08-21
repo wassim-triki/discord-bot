@@ -9,6 +9,7 @@ module.exports = {
     play: '⏯',
     stop: '⏯',
     next: '⏭',
+    previous: '⏮️',
     success: '🟢',
     noResult: '💢',
     neutral: '🔵',

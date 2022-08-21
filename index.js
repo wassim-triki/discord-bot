@@ -6,6 +6,7 @@ const distube = require('./src/distube');
 require('./src/controlls/play');
 require('./src/controlls/pause');
 require('./src/controlls/next');
+require('./src/controlls/previous');
 const colors = require('colors/safe');
 require('./src/rest')();
 const createSongEmbed = require('./src/createSongEmbed');
@@ -23,7 +24,7 @@ client.distube.on('playSong', async (queue, song) => {
   try {
     const songEmbed = createSongEmbed(song, queue);
     const message = await queue.textChannel.send({ embeds: [songEmbed] });
-    // await message.react('⏮');
+    await message.react(client.emotes.previous);
     await message.react(client.emotes.play);
     await message.react(client.emotes.next);
     // await message.react('🔇');
@@ -35,44 +36,37 @@ client.distube.on('playSong', async (queue, song) => {
 });
 
 client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+  try {
+    if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === 'play') {
-    if (!interaction.member.voice.channel) {
-      return interaction.reply({
-        content: `${client.emotes.warning} | lezm tkoun fi voice channel bech tasma3 music!`,
-      });
-    }
-    const input = interaction.options._hoistedOptions[0]?.value || '';
-    const voiceChannel = interaction.member.voice.channel;
-    let song;
-    let result;
-    if (input) {
-      result = await client.distube.search(input);
-      if (!result) {
+    if (interaction.commandName === 'play') {
+      if (!interaction.member.voice.channel) {
         return interaction.reply({
-          content: `${config.emotes.noResult} | ma l9itch "${input}". Cherchi 7aja 7a9i9ya`,
+          content: `${client.emotes.warning} | lezm tkoun fi voice channel bech tasma3 music!`,
         });
       }
-    } else {
-      interaction.channel.send(
-        `${config.emotes.neutral} | ma 7atitch esm 6neya. haw 7aja random...`
-      );
-    }
+      const input = interaction.options._hoistedOptions[0]?.value || 'music';
+      const voiceChannel = interaction.member.voice.channel;
 
-    if (result) {
-      song = result[0].url;
-    } else {
-      song = 'music';
-    }
+      const result = await client.distube.search(input);
+      if (!result)
+        return interaction.reply({
+          content: `${client.emotes.error} | ma 9itch "${input}"!`,
+        });
+      const song = result[0];
+      client.distube
+        .play(voiceChannel, song.url, {
+          member: interaction.member,
+          textChannel: interaction.channel,
+        })
+        .catch((err) => console.log(colors.red(err)));
 
-    client.distube
-      .play(voiceChannel, song, {
-        member: interaction.member,
-        textChannel: interaction.channel,
-      })
-      .catch((err) => console.log(colors.red(err)));
-    return interaction.reply({ content: 'la7dha bark 🧐 ' });
+      return interaction.reply({ content: 'la7dha bark 🧐 ' });
+    }
+  } catch (error) {
+    return interaction.reply({
+      content: `${client.emotes.error} | ${error.message}`,
+    });
   }
 });
 
