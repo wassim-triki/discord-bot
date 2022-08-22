@@ -12,7 +12,7 @@ const colors = require('colors/safe');
 require('./src/rest')();
 const createSongEmbed = require('./src/createSongEmbed');
 const WELCOME_CHANNEL_ID = '1009745835908669501';
-const GENERAL_CHANNEL_ID = '1009763648870301796';
+const GENERAL_CHANNEL_ID = '1010169328244633681';
 
 client.distube = distube;
 client.emotes = config.emotes;
@@ -104,9 +104,11 @@ client.on('interactionCreate', async (interaction) => {
       return;
     }
   } catch (error) {
-    return interaction.reply({
+    await interaction.reply({
       content: `${client.emotes.error} | ${error.message}`,
     });
+
+    return;
   }
 });
 
